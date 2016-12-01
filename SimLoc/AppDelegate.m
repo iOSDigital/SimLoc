@@ -7,21 +7,32 @@
 //
 
 #import "AppDelegate.h"
+#import "MenuController.h"
+
 
 @interface AppDelegate ()
-
+@property (nonatomic,strong) MenuController *menuController;
 @end
+
+
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-	// Insert code here to initialize your application
+	self.menuController = [MenuController new];
+	[self.menuController initialiseMenu];
 }
 
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-	// Insert code here to tear down your application
+	
 }
+
+
+- (NSMenu *)applicationDockMenu:(NSApplication *)sender {
+	return self.menuController.mainMenu;
+}
+
 
 
 @end
