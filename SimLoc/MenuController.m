@@ -41,8 +41,6 @@
 
 	NSArray <NSDictionary *> *deviceArray = [self deviceArray];
 	
-	
-	
 	NSPredicate *bootedPredicate = [NSPredicate predicateWithFormat:@"isBooted == YES"];
 	NSArray <Device *> *bootedDeviceArray = [[self rawDevicesArray] filteredArrayUsingPredicate:bootedPredicate];
 	
@@ -55,11 +53,10 @@
 			NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:menuString action:@selector(menuItemClicked:) keyEquivalent:@""];
 			[menuItem setRepresentedObject:[NSDictionary dictionaryWithObject:device forKey:@"device"]];
 			[menuItem setTarget:self];
-			[menuItem setImage:[NSImage imageNamed:@"menu-circle-grey"]];
+			[menuItem setImage:[NSImage imageNamed:@"PowerIconGrey"]];
 			if (device.isBooted) {
-				[menuItem setImage:[NSImage imageNamed:@"menu-circle-green"]];
+				[menuItem setImage:[NSImage imageNamed:@"PowerIconGreen"]];
 			}
-			[menuItem.image setSize:NSMakeSize(12, 12)];
 			NSMenu *applicationsSubMenu = [self applicationsMenuForDevice:device];
 			menuItem.submenu = applicationsSubMenu;
 			[self.mainMenu addItem:menuItem];
@@ -89,23 +86,41 @@
 			[subMenu addItem:[NSMenuItem separatorItem]];
 			
 			[deviceArray enumerateObjectsUsingBlock:^(Device * _Nonnull device, NSUInteger idx, BOOL * _Nonnull stop) {
-				NSString *menuString = [NSString stringWithFormat:@"%@ %@",device.deviceName,device.deviceVersion];
 				
-				NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:menuString action:@selector(menuItemClicked:) keyEquivalent:@""];
-				[menuItem setRepresentedObject:[NSDictionary dictionaryWithObject:device forKey:@"device"]];
-				[menuItem setTarget:self];
-				
-				[menuItem setImage:[NSImage imageNamed:@"menu-circle-grey"]];
-				if (device.isBooted) {
-					[menuItem setImage:[NSImage imageNamed:@"menu-circle-green"]];
+				BOOL hideEmptySimulators = [[NSUserDefaults standardUserDefaults] boolForKey:@"HideEmptySimulators"];
+				NSInteger appCount = [self countApplicationsForDevice:device];
+
+				if (hideEmptySimulators && appCount == 0) {
+					// - Do nothing
+				}else{
+					
+					NSString *menuString = [NSString stringWithFormat:@"%@ %@",device.deviceName,device.deviceVersion];
+					__block NSMutableAttributedString *menuStringAttr = [self deviceMenuTitleString:device];
+					
+					NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:menuString action:@selector(menuItemClicked:) keyEquivalent:@""];
+					menuItem.attributedTitle = menuStringAttr;
+					
+					[self folderSizeWithMenuItem:menuItem completion:^(NSNumber *folderSize) {
+						NSString *folderSizeString = [NSString stringWithFormat:@"%@MB",folderSize];
+						NSAttributedString *folderSizeStringAttr = [[NSAttributedString alloc] initWithString:folderSizeString attributes:[self deviceMenuAttributesDictionary]];
+						[menuStringAttr appendAttributedString:folderSizeStringAttr];
+						menuItem.attributedTitle = menuStringAttr;
+					}];
+
+					[menuItem setRepresentedObject:[NSDictionary dictionaryWithObject:device forKey:@"device"]];
+					[menuItem setTarget:self];
+					
+					[menuItem setImage:[NSImage imageNamed:@"PowerIconGrey"]];
+					if (device.isBooted) {
+						[menuItem setImage:[NSImage imageNamed:@"PowerIconGreen"]];
+					}
+					
+					// - Get the applications for this device in a submenu
+					NSMenu *applicationsSubMenu = [self applicationsMenuForDevice:device];
+					menuItem.submenu = applicationsSubMenu;
+					[subMenu addItem:menuItem];
 				}
-				[menuItem.image setSize:NSMakeSize(12, 12)];
 				
-				// - Get the applications for this device in a submenu
-				NSMenu *applicationsSubMenu = [self applicationsMenuForDevice:device];
-				menuItem.submenu = applicationsSubMenu;
-				
-				[subMenu addItem:menuItem];
 				
 			}];
 			
@@ -118,12 +133,44 @@
 	
 	
 	[self.mainMenu addItem:[NSMenuItem separatorItem]];
+	[[self.mainMenu addItemWithTitle:@"Preferences..." action:@selector(showPreferences:) keyEquivalent:@""] setTarget:self];
+	[self.mainMenu addItem:[NSMenuItem separatorItem]];
 	[[self.mainMenu addItemWithTitle:@"Quit" action:@selector(quitApp:) keyEquivalent:@""] setTarget:self];
 	
 	self.statusItem.menu = self.mainMenu;
 }
 
+-(NSMutableAttributedString *)deviceMenuTitleString:(Device *)device {
+	NSString *menuString = [NSString stringWithFormat:@"%@ %@",device.deviceName,device.deviceVersion];
+	NSMutableAttributedString *menuStringAttr = [[NSMutableAttributedString alloc] initWithString:menuString attributes:nil];
+	
+	NSInteger appCount = [self countApplicationsForDevice:device];
+	NSString *detailsString = [NSString stringWithFormat:@"\n%lu app%@. ",appCount,(appCount == 1 ? @"" : @"s")];
+	NSAttributedString *detailStringAttr = [[NSAttributedString alloc] initWithString:detailsString attributes:[self deviceMenuAttributesDictionary]];
+	[menuStringAttr appendAttributedString:detailStringAttr];
+	
+	return menuStringAttr;
+}
 
+-(NSDictionary *)deviceMenuAttributesDictionary {
+	NSMutableDictionary *attributesDictionary = [NSMutableDictionary dictionary];
+	[attributesDictionary setObject:[NSFont systemFontOfSize:11] forKey:NSFontAttributeName];
+	[attributesDictionary setObject:[NSColor lightGrayColor] forKey:NSForegroundColorAttributeName];
+	return [attributesDictionary copy];
+}
+
+
+-(NSInteger)countApplicationsForDevice:(Device *)device {
+	__block NSString *applicationsPath = [[self containersPathForDevice:device] stringByAppendingPathComponent:@"Bundle/Application"];
+	__block NSError *fileError;
+	
+	NSPredicate *dotPredicate = [NSPredicate predicateWithFormat:@"NOT SELF BEGINSWITH %@",@"."];
+	NSArray <NSString *> *appsArray = [[self.fileManager contentsOfDirectoryAtPath:applicationsPath error:&fileError] filteredArrayUsingPredicate:dotPredicate];
+	if (!appsArray) {
+		return 0;
+	}
+	return appsArray.count;
+}
 
 -(NSMenu *)applicationsMenuForDevice:(Device *)device {
 	
@@ -133,18 +180,17 @@
 	[menuItem setRepresentedObject:device];
 	[menuItem setTarget:self];
 	
-	__block NSFileManager *fileManager = [NSFileManager defaultManager];
 	__block NSString *applicationsPath = [[self containersPathForDevice:device] stringByAppendingPathComponent:@"Bundle/Application"];
 	__block NSError *fileError;
 	
 	NSPredicate *dotPredicate = [NSPredicate predicateWithFormat:@"NOT SELF BEGINSWITH %@",@"."];
-	NSArray <NSString *> *appsArray = [[fileManager contentsOfDirectoryAtPath:applicationsPath error:&fileError] filteredArrayUsingPredicate:dotPredicate];
+	NSArray <NSString *> *appsArray = [[self.fileManager contentsOfDirectoryAtPath:applicationsPath error:&fileError] filteredArrayUsingPredicate:dotPredicate];
 	__block NSMutableArray *applicationsArray = [NSMutableArray new];
 	
 	[appsArray enumerateObjectsUsingBlock:^(NSString * _Nonnull folderName, NSUInteger idx, BOOL * _Nonnull stop) {
 		
 		NSString *appPath = [applicationsPath stringByAppendingPathComponent:folderName];
-		NSArray <NSString *> *filesArray = [[fileManager contentsOfDirectoryAtPath:appPath error:&fileError] filteredArrayUsingPredicate:dotPredicate];
+		NSArray <NSString *> *filesArray = [[self.fileManager contentsOfDirectoryAtPath:appPath error:&fileError] filteredArrayUsingPredicate:dotPredicate];
 		Application *application = [Application new];
 		application.applicationFolderName = folderName;
 		application.applicationPath = [[[self containersPathForDevice:device] stringByAppendingPathComponent:@"Data/Application"] stringByAppendingPathComponent:folderName];
@@ -178,16 +224,6 @@
 
 	}];
 	
-	
-	
-	if ([device.deviceUUID isEqualToString:@"01E7580E-7B80-42EA-8C5F-AF8EEF450C9E"]) {
-		NSLog(@"Break");
-	}
-	
-	
-	
-	
-	// Users/derbs/Library/Developer/CoreSimulator/Devices/01E7580E-7B80-42EA-8C5F-AF8EEF450C9E/data/Containers/Bundle/Application
 	
 	return applicationsMenu;
 }
@@ -236,21 +272,19 @@
 	[[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[fullURL]];
 }
 
--(NSString *)containersPathForDevice:(Device *)device {
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSString *userLibraryPath = [[[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject] absoluteString];
+-(NSString *)pathForDevice:(Device *)device {
+	NSString *userLibraryPath = [[[self.fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject] absoluteString];
 	NSString *devicePath = [@"Developer/CoreSimulator/Devices" stringByAppendingPathComponent:device.deviceUUID];
-	NSString *containersPath = [devicePath stringByAppendingPathComponent:@"data/Containers"];
-	NSString *fullPath = [userLibraryPath stringByAppendingPathComponent:containersPath];
+	NSString *fullPath = [userLibraryPath stringByAppendingPathComponent:devicePath];
 	
 	return [fullPath stringByReplacingOccurrencesOfString:@"file:" withString:@""];
 }
-
-
--(IBAction)quitApp:(id)sender {
-	[[NSApplication sharedApplication] terminate:self];
+-(NSString *)containersPathForDevice:(Device *)device {
+	NSString *devicePath = [self pathForDevice:device];
+	NSString *containersPath = [devicePath stringByAppendingPathComponent:@"data/Containers"];
+	
+	return [containersPath stringByReplacingOccurrencesOfString:@"file:" withString:@""];
 }
-
 
 
 -(NSArray *)rawDevicesArray {
@@ -275,6 +309,7 @@
 				device.deviceState = obj[@"state"];
 				device.deviceAvailability = obj[@"availability"];
 				device.deviceVersion = key;
+				device.devicePath = [self pathForDevice:device];
 				device.deviceApplicationsPath = [[self containersPathForDevice:device] stringByAppendingPathComponent:@"Data/Application"];
 				
 				NSRange spaceRange = [key rangeOfString:@" "];
@@ -291,6 +326,29 @@
 	
 	return devicesArray;
 }
+
+-(void)folderSizeWithMenuItem:(NSMenuItem *)menuItem completion:(folderSizeBlock)completion {
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		
+		Device *device = menuItem.representedObject[@"device"];
+		
+		NSArray *filesArray = [self.fileManager subpathsOfDirectoryAtPath:device.devicePath error:nil];
+		NSEnumerator *filesEnumerator = [filesArray objectEnumerator];
+		NSString *fileName;
+		__block unsigned long long int fileSize = 0;
+		
+		while (fileName = [filesEnumerator nextObject]) {
+			NSDictionary *fileDictionary = [self.fileManager attributesOfItemAtPath:[device.devicePath stringByAppendingPathComponent:fileName] error:nil];
+			fileSize += [fileDictionary fileSize];
+		}
+
+		dispatch_async(dispatch_get_main_queue(), ^{
+			completion(@(fileSize / 1000 / 1000));
+		});
+	});
+
+}
+
 
 -(NSArray *)deviceArray {
 	
@@ -349,5 +407,16 @@
 	return [file readDataToEndOfFile];
 }
 
+
+
+-(IBAction)quitApp:(id)sender {
+	[[NSApplication sharedApplication] terminate:self];
+}
+
+-(IBAction)showPreferences:(id)sender {
+	if ([self.delegate respondsToSelector:@selector(menuControllerDidSelectPreferences:)]) {
+		[self.delegate menuControllerDidSelectPreferences:self];
+	}
+}
 
 @end

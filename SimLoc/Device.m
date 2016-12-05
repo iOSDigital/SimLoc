@@ -29,6 +29,8 @@
 	[string appendString:@"\n"];
 	[string appendFormat:@"deviceUUID:             %@",self.deviceUUID];
 	[string appendString:@"\n"];
+	[string appendFormat:@"devicePath:             %@",self.devicePath];
+	[string appendString:@"\n"];
 	[string appendFormat:@"deviceApplicationsPath: %@",self.deviceApplicationsPath];
 	
 	return string;

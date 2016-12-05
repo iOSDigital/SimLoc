@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		66BDAAFA1DEEF008004894A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BDAAF91DEEF008004894A7 /* AppDelegate.m */; };
 		66BDAAFD1DEEF008004894A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BDAAFC1DEEF008004894A7 /* main.m */; };
-		66BDAB001DEEF008004894A7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BDAAFF1DEEF008004894A7 /* ViewController.m */; };
 		66BDAB021DEEF008004894A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66BDAB011DEEF008004894A7 /* Assets.xcassets */; };
 		66BDAB051DEEF008004894A7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66BDAB031DEEF008004894A7 /* Main.storyboard */; };
 		66BDAB411DEEF87D004894A7 /* MenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BDAB401DEEF87D004894A7 /* MenuController.m */; };
@@ -22,8 +21,6 @@
 		66BDAAF81DEEF008004894A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		66BDAAF91DEEF008004894A7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		66BDAAFC1DEEF008004894A7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		66BDAAFE1DEEF008004894A7 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		66BDAAFF1DEEF008004894A7 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		66BDAB011DEEF008004894A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = SimLoc/Assets.xcassets; sourceTree = "<group>"; };
 		66BDAB041DEEF008004894A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		66BDAB061DEEF008004894A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -71,14 +68,8 @@
 				66BDAB031DEEF008004894A7 /* Main.storyboard */,
 				66BDAAF81DEEF008004894A7 /* AppDelegate.h */,
 				66BDAAF91DEEF008004894A7 /* AppDelegate.m */,
-				66BDAAFE1DEEF008004894A7 /* ViewController.h */,
-				66BDAAFF1DEEF008004894A7 /* ViewController.m */,
-				66BDAB3F1DEEF87D004894A7 /* MenuController.h */,
-				66BDAB401DEEF87D004894A7 /* MenuController.m */,
-				66BDAB4B1DF06660004894A7 /* Application.h */,
-				66BDAB4C1DF06660004894A7 /* Application.m */,
-				66BDAB421DEF01A4004894A7 /* Device.h */,
-				66BDAB431DEF01A4004894A7 /* Device.m */,
+				66BDAB4F1DF0AD34004894A7 /* Controllers */,
+				66BDAB4E1DF0ABC5004894A7 /* Objects */,
 			);
 			path = SimLoc;
 			sourceTree = "<group>";
@@ -98,6 +89,26 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		66BDAB4E1DF0ABC5004894A7 /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+				66BDAB4B1DF06660004894A7 /* Application.h */,
+				66BDAB4C1DF06660004894A7 /* Application.m */,
+				66BDAB421DEF01A4004894A7 /* Device.h */,
+				66BDAB431DEF01A4004894A7 /* Device.m */,
+			);
+			name = Objects;
+			sourceTree = "<group>";
+		};
+		66BDAB4F1DF0AD34004894A7 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				66BDAB3F1DEEF87D004894A7 /* MenuController.h */,
+				66BDAB401DEEF87D004894A7 /* MenuController.m */,
+			);
+			name = Controllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -173,7 +184,6 @@
 			files = (
 				66BDAB4D1DF06660004894A7 /* Application.m in Sources */,
 				66BDAB411DEEF87D004894A7 /* MenuController.m in Sources */,
-				66BDAB001DEEF008004894A7 /* ViewController.m in Sources */,
 				66BDAAFD1DEEF008004894A7 /* main.m in Sources */,
 				66BDAB441DEF01A4004894A7 /* Device.m in Sources */,
 				66BDAAFA1DEEF008004894A7 /* AppDelegate.m in Sources */,
@@ -326,6 +336,7 @@
 				66BDAB0B1DEEF008004894A7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

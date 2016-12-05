@@ -12,6 +12,7 @@
 
 @interface AppDelegate ()
 @property (nonatomic,strong) MenuController *menuController;
+@property (nonatomic,strong) NSWindowController *preferencesController;
 @end
 
 
@@ -20,6 +21,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 	self.menuController = [MenuController new];
+	self.menuController.delegate = self;
 	[self.menuController initialiseMenu];
 }
 
@@ -34,5 +36,9 @@
 }
 
 
+-(void)menuControllerDidSelectPreferences:(MenuController *)sender {
+	self.preferencesController = [[NSStoryboard storyboardWithName:@"Main" bundle:nil] instantiateControllerWithIdentifier:@"PreferencesWindowID"];
+	[self.preferencesController showWindow:nil];
+}
 
 @end

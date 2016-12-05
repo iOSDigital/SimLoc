@@ -12,6 +12,7 @@
 @interface Device : NSObject
 
 @property (nonatomic,strong) NSString *deviceName;
+@property (nonatomic,strong) NSString *devicePath;
 @property (nonatomic,strong) NSString *deviceApplicationsPath;
 @property (nonatomic,strong) NSString *deviceVersion;
 @property (nonatomic,strong) NSNumber *deviceVersionNumeric;
