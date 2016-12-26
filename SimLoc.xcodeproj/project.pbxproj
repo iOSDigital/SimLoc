@@ -14,6 +14,7 @@
 		66BDAB411DEEF87D004894A7 /* MenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BDAB401DEEF87D004894A7 /* MenuController.m */; };
 		66BDAB441DEF01A4004894A7 /* Device.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BDAB431DEF01A4004894A7 /* Device.m */; };
 		66BDAB4D1DF06660004894A7 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 66BDAB4C1DF06660004894A7 /* Application.m */; };
+		66C03E801DF7029600E8F77F /* PrefsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C03E7F1DF7029600E8F77F /* PrefsController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,8 @@
 		66BDAB431DEF01A4004894A7 /* Device.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Device.m; sourceTree = "<group>"; };
 		66BDAB4B1DF06660004894A7 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		66BDAB4C1DF06660004894A7 /* Application.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Application.m; sourceTree = "<group>"; };
+		66C03E7E1DF7029600E8F77F /* PrefsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefsController.h; sourceTree = "<group>"; };
+		66C03E7F1DF7029600E8F77F /* PrefsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrefsController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +110,8 @@
 			children = (
 				66BDAB3F1DEEF87D004894A7 /* MenuController.h */,
 				66BDAB401DEEF87D004894A7 /* MenuController.m */,
+				66C03E7E1DF7029600E8F77F /* PrefsController.h */,
+				66C03E7F1DF7029600E8F77F /* PrefsController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -184,6 +189,7 @@
 			files = (
 				66BDAB4D1DF06660004894A7 /* Application.m in Sources */,
 				66BDAB411DEEF87D004894A7 /* MenuController.m in Sources */,
+				66C03E801DF7029600E8F77F /* PrefsController.m in Sources */,
 				66BDAAFD1DEEF008004894A7 /* main.m in Sources */,
 				66BDAB441DEF01A4004894A7 /* Device.m in Sources */,
 				66BDAAFA1DEEF008004894A7 /* AppDelegate.m in Sources */,
