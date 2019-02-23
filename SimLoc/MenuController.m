@@ -255,8 +255,12 @@
 			NSString *bundleID = infoPlistDictionary[@"MCMMetadataIdentifier"];
 			if ([bundleID isEqualToString:application.applicationBundleID]) {
 				fullPath = obj.absoluteString;
-				if ([self.fileManager fileExistsAtPath:[[fullPath stringByReplacingOccurrencesOfString:@"file:" withString:@""] stringByAppendingPathComponent:@"Library"]]) {
-					fullPath = [fullPath stringByAppendingPathComponent:@"Library"];
+				if ([self.fileManager fileExistsAtPath:[[fullPath stringByReplacingOccurrencesOfString:@"file:" withString:@""] stringByAppendingPathComponent:@"Documents"]]) {
+					fullPath = [fullPath stringByAppendingPathComponent:@"Documents"];
+				}else{
+					if ([self.fileManager fileExistsAtPath:[[fullPath stringByReplacingOccurrencesOfString:@"file:" withString:@""] stringByAppendingPathComponent:@"Library"]]) {
+						fullPath = [fullPath stringByAppendingPathComponent:@"Library"];
+					}
 				}
 				*stop = YES;
 			}
@@ -297,23 +301,29 @@
 	// - Enumerate the dictionary, get all those that start with 'iOS', create a Device object and put into an array
 	[devicesDictionary enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSArray *obj, BOOL * stop) {
 		
-		NSRange range = NSMakeRange(0, 3);
-		NSString *keyVersion = [key substringWithRange:range];
+//		NSRange range = NSMakeRange(0, 3);
+//		NSString *keyVersion = [key substringWithRange:range];
+
+//		if ([keyVersion isEqualToString:@"iOS"]) {
 		
-		if ([keyVersion isEqualToString:@"iOS"]) {
-			
+		NSMutableString *keyVersion = [key componentsSeparatedByString:@"."].lastObject.mutableCopy;
+		[keyVersion replaceOccurrencesOfString:@"-" withString:@"." options:0 range:NSMakeRange(0, keyVersion.length)];
+		[keyVersion replaceOccurrencesOfString:@"iOS." withString:@"" options:0 range:NSMakeRange(0, keyVersion.length)];
+
+		if ([key containsString:@"iOS"]) {
+
 			[obj enumerateObjectsUsingBlock:^(NSDictionary *obj, NSUInteger idx, BOOL * stop) {
 				Device *device = [Device new];
 				device.deviceName = obj[@"name"];
 				device.deviceUUID = obj[@"udid"];
 				device.deviceState = obj[@"state"];
 				device.deviceAvailability = obj[@"availability"];
-				device.deviceVersion = key;
+				device.deviceVersion = keyVersion;
 				device.devicePath = [self pathForDevice:device];
 				device.deviceApplicationsPath = [[self containersPathForDevice:device] stringByAppendingPathComponent:@"Data/Application"];
 				
 				NSRange spaceRange = [key rangeOfString:@" "];
-				NSString *versionNumericString = [key substringFromIndex:spaceRange.location + 1];
+				NSString *versionNumericString = keyVersion;
 				NSNumber *versionNumber = [NSNumber numberWithDouble:versionNumericString.doubleValue];
 				device.deviceVersionNumeric = versionNumber;
 				
