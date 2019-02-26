@@ -18,8 +18,9 @@
     [super viewDidLoad];
 }
 
--(IBAction)savePrefs:(id)sender {
+-(IBAction)savePrefs:(NSButton *)sender {
 	[[NSUserDefaults standardUserDefaults] synchronize];
+	[sender.window close];
 }
 
 

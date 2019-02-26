@@ -322,7 +322,6 @@
 				device.devicePath = [self pathForDevice:device];
 				device.deviceApplicationsPath = [[self containersPathForDevice:device] stringByAppendingPathComponent:@"Data/Application"];
 				
-				NSRange spaceRange = [key rangeOfString:@" "];
 				NSString *versionNumericString = keyVersion;
 				NSNumber *versionNumber = [NSNumber numberWithDouble:versionNumericString.doubleValue];
 				device.deviceVersionNumeric = versionNumber;
